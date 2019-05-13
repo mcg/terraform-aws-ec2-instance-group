@@ -75,7 +75,7 @@ resource "aws_instance" "default" {
   user_data                   = "${var.user_data}"
   iam_instance_profile        = "${element(aws_iam_instance_profile.default.*.name, 0)}"
   associate_public_ip_address = "${var.associate_public_ip_address}"
-  key_name                    = "${signum(length(var.ssh_key_pair)) == 1 ? var.ssh_key_pair : module.ssh_key_pair.key_name}"
+  key_name                    = "${var.ssh_key_pair}"
   subnet_id                   = "${var.subnet}"
   monitoring                  = "${var.monitoring}"
   private_ip                  = "${element(concat(var.private_ips, list("")), min(length(var.private_ips), count.index))}"
