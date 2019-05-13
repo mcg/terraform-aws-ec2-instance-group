@@ -74,10 +74,10 @@ output "primary_network_interface_ids" {
   value       = "${aws_instance.default.*.primary_network_interface_id}"
 }
 
-output "network_interface_ids" {
-  description = "IDs of the network interface that was created with the instance"
-  value       = "${aws_instance.default.*.network_interface_id}"
-}
+# output "network_interface_ids" {
+#   description = "IDs of the network interface that was created with the instance"
+#   value       = "${aws_instance.default.*.network_interface_id}"
+# }
 
 output "eip_per_instance_count" {
   value       = "${local.count_default_ips + local.additional_ips_count}"
