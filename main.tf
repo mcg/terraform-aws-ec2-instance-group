@@ -48,7 +48,7 @@ module "label" {
   name       = "${var.name}"
   attributes = "${var.attributes}"
   delimiter  = "${var.delimiter}"
-  tags       = "${merge(map("AZ", "${local.availability_zone}"), var.tags)}"
+  tags       = "${var.tags}"
   enabled    = "true"
 }
 
@@ -68,7 +68,7 @@ resource "aws_iam_role" "default" {
 resource "aws_instance" "default" {
   count                       = "${local.instance_count}"
   ami                         = "${data.aws_ami.info.id}"
-  availability_zone           = "${local.availability_zone}"
+  availability_zone           = "${element(split(",", local.availability_zone), count.index)}"
   instance_type               = "${var.instance_type}"
   ebs_optimized               = "${var.ebs_optimized}"
   disable_api_termination     = "${var.disable_api_termination}"
@@ -76,7 +76,7 @@ resource "aws_instance" "default" {
   iam_instance_profile        = "${element(aws_iam_instance_profile.default.*.name, 0)}"
   associate_public_ip_address = "${var.associate_public_ip_address}"
   key_name                    = "${var.ssh_key_pair}"
-  subnet_id                   = "${var.subnet}"
+  subnet_id                   = "${lookup(var.subnet, element(split(",", local.availability_zone), count.index))}"
   monitoring                  = "${var.monitoring}"
   private_ip                  = "${element(concat(var.private_ips, list("")), min(length(var.private_ips), count.index))}"
   source_dest_check           = "${var.source_dest_check}"
@@ -94,7 +94,7 @@ resource "aws_instance" "default" {
     delete_on_termination = "${var.delete_on_termination}"
   }
 
-  tags = "${merge(module.label.tags, map("instance_index", "${count.index}", "Name", "${module.label.name}-${module.label.stage}-${count.index}"))}"
+  tags = "${merge(module.label.tags, map("instance_index", "${count.index}", "Name", "${module.label.name}-${module.label.stage}-${count.index}", "AZ", "${element(split(",", local.availability_zone), count.index)}"))}"
 
   lifecycle {
     ignore_changes = [ "ami", "user_data" ]

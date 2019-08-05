@@ -50,6 +50,7 @@ variable "allowed_ports" {
 }
 
 variable "subnet" {
+  type        = "map"
   description = "VPC Subnet ID the instance is launched in"
 }
 
