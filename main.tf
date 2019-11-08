@@ -105,6 +105,12 @@ resource "aws_instance" "default" {
   ipv6_address_count          = var.ipv6_address_count
   ipv6_addresses              = var.ipv6_addresses
 
+  lifecycle {
+    ignore_changes = [
+      "ami",
+      "user_data"
+    ]
+  }
   vpc_security_group_ids = compact(
     concat(
       [
